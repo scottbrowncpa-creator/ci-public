@@ -2,6 +2,15 @@
 
 Skills and reviewers for school finance work, free to use.
 
+## Install
+
+No sign-in needed. In Claude Code:
+
+```
+/plugin marketplace add scottbrowncpa-creator/ci-public
+/plugin install ci-public@ci-public
+```
+
 ## What is in it
 
 | Item | Kind | What it does |
