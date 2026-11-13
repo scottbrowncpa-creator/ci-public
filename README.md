@@ -17,6 +17,7 @@ No sign-in needed. In Claude Code:
 |---|---|---|
 | ci-plain-voice | skill | Rewrites your draft so it does not read like AI. Keeps every number. |
 | ci-plainenglish | skill | Explains anything in plain words, no jargon. |
+| ci-goldfish | skill | Goldfish review of any file against its sources: the copy-paste prompt plus how to run it fresh. Type "goldfish" or /ci-goldfish. |
 | plan-explainer | agent | Reads a build plan cold and says what is unclear before anyone starts. |
 | workbook-auditor-blind | agent | First look at an Excel file with no backstory: footing, ties, formula errors. |
 | close-reviewer-blind | agent | First look at a monthly close package with no backstory. |
