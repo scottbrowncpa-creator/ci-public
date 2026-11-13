@@ -1,0 +1,26 @@
+{
+  "description": "Re-read rule: reminds Claude to re-read files from disk instead of working from chat memory, on every prompt and after a chat is squeezed to a summary.",
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ \"$CI_PUBLIC_REREAD\" = \"off\" ] || cat \"${CLAUDE_PLUGIN_ROOT}/hooks/reread.txt\""
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ \"$CI_PUBLIC_REREAD\" = \"off\" ] || cat \"${CLAUDE_PLUGIN_ROOT}/hooks/reread.txt\""
+          }
+        ]
+      }
+    ]
+  }
+}

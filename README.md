@@ -23,8 +23,13 @@ No sign-in needed. In Claude Code:
 | plan-redteam | agent | Pre-mortem on a big build plan: the three likeliest ways it fails. |
 | ci-protect-data | skill | Masks student IDs and bank numbers in a file before it goes into Claude. |
 | ci-wrapup | skill | Saves an end-of-job summary: what was decided, numbers and sources, what is still open. |
+| re-read rule | hook | Every prompt, and after a long chat is squeezed to a summary, reminds Claude to re-read files from disk instead of trusting chat memory. Text in `hooks/reread.txt`. |
 
 The two blind auditors run the helper scripts in `tools/` (wb_lint, ship_check, xlsx_probe, close_scan, plus what they call), and a guard hook (`.claude/hooks/blind_guard.py`) that lets them run only those four. They need Python 3 with openpyxl (`pip install openpyxl`; pyxlsb for .xlsb files). Recalc uses Excel on Windows (`tools/excel_recalc.ps1`).
+
+## Re-read rule
+
+Long chats drift: Claude starts working from what it remembers instead of what the file says. The re-read hook adds a short reminder (`hooks/reread.txt`) to every prompt and after a chat is squeezed to a summary. It costs about 150 tokens per prompt. To turn off just this hook and keep the rest of the plugin, set the environment variable `CI_PUBLIC_REREAD=off` (for example in the `env` block of your Claude Code settings). It uses `cat`, which Claude Code on Windows gets through Git Bash.
 
 ## Goldfish reviewers
 

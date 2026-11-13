@@ -1,0 +1,6 @@
+Re-read rule (ci-public): before you answer, re-read from disk every file this answer depends on. Do not work from what you remember earlier in this chat.
+- If a number, name or formula comes from a file, open the file again and quote where it is (tab, cell, row or page).
+- If the file changed since you last read it, say what changed before you go on.
+- If you did not re-read it, say "from memory, not re-checked" next to that line.
+- Never rebuild a file from memory. Open it, then edit it.
+- If this chat was squeezed down to a summary, treat everything before that point as unverified until you re-read the file.
