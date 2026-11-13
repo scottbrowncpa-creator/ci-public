@@ -10,7 +10,7 @@ hooks:
       hooks:
         - type: command
           command: python
-          args: ["${CLAUDE_PROJECT_DIR}/.claude/hooks/blind_guard.py"]
+          args: ["${CLAUDE_PLUGIN_ROOT}/.claude/hooks/blind_guard.py"]
           timeout: 10
 ---
 
