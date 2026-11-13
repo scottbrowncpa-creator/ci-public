@@ -2,6 +2,18 @@
   "name": "ci-public",
   "version": "0.1.0",
   "description": "Plain-talk writing skills and blind (goldfish) reviewers for school finance work.",
-  "author": { "name": "CI-Public" },
-  "license": "Apache-2.0"
+  "author": {
+    "name": "CI-Public"
+  },
+  "license": "Apache-2.0",
+  "displayName": "CI-Public",
+  "keywords": [
+    "school finance",
+    "accounting",
+    "plain language",
+    "review",
+    "excel",
+    "audit"
+  ],
+  "icon": ".claude-plugin/icon.png"
 }
