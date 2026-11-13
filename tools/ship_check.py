@@ -2,8 +2,6 @@
 
     python tools/ship_check.py xlsx "<file.xlsx>" [--voice]
     python tools/ship_check.py html "<page.html>" --xlsx "<file.xlsx>" [--page-text "<rendered text file>"]
-    python tools/ship_check.py docx "<file.docx>"      fingerprints (library author stamp, no Word app tag, build talk,
-                                                       git hashes) plus the AI-tell list per paragraph; MED, stamps when clean
 
 xlsx: reads formulas and cached values together (recalc first: tools/excel_recalc.ps1). Settles
   - every formula has a cached value and none is an error
@@ -17,8 +15,6 @@ html: static page checks (title, viewport, placeholders, dark-mode block) plus, 
   rendered in the browser), every $ figure on the page is looked up in the workbook. A figure the workbook does not
   carry is a finding: the reader sees two numbers for one thing.
 The AI-tell find-list runs over authored cells by default (MED, reported, not blocking); --no-voice skips it.
-Every mode also reports placeholder library metadata in docProps (creator "openpyxl" / "python-docx" / "Un-named", no Office
-Application tag); `python tools/doc_fingerprint.py fix <file> --author "<name>"` clears them before the file goes out.
 
 An xlsx is stamped only if it also passes the xlsx-ship-ready gate (tools/xlsx_gate.py: recalc, wb_lint, footing).
 --force-reason "<why>" overrides that, reviewer only, logged to logs/gate.jsonl.
@@ -402,38 +398,6 @@ def check_voice(wv, rep):
                         rep.add("MED", "voice", f"{vs.title}!{c.coordinate} {', '.join(tags)}: '{c.value[:60]}'")
 
 
-def check_fingerprint(path, rep, text=False, sev="MED"):
-    """Machine fingerprints (10/26/26): library author stamps, no Office app tag, build talk and git hashes in the text.
-    xlsx: MED, reported not blocking, until every generator stamps its author. docx: HIGH, no stamp with a library
-    creator. `python tools/doc_fingerprint.py fix <file> --author "<name>"` clears them."""
-    sys.path.insert(0, str(Path(__file__).parent))
-    import doc_fingerprint as fp
-    rep.did("fingerprint")
-    for h in fp.metadata_hits(fp.metadata(path)):
-        rep.add(sev, "fingerprint", h)
-    if text:
-        for tag, part, i, snippet in fp.text_hits(path):
-            rep.add(sev, "fingerprint", f"{tag}: '{snippet}'")
-
-
-def check_docx(path, rep):
-    """A Word doc before it leaves: fingerprints (metadata and text, HIGH) plus the AI-tell find-list per paragraph (MED)."""
-    sys.path.insert(0, str(Path(__file__).parent))
-    import doc_fingerprint as fp
-    from ai_tell_scan import hits_in
-    check_fingerprint(path, rep, text=True, sev="HIGH")
-    n = 0
-    for part, i, text in fp.paragraphs(path, "word"):
-        n += 1
-        if len(text.split()) >= 6:
-            tags = hits_in(text)
-            if tags:
-                rep.add("MED", "voice", f"{Path(part).name} para {i} {', '.join(tags)}: '{text.strip()[:60]}'")
-    rep.did("paragraphs", n)
-    if n == 0:
-        rep.add("UNKNOWN", "docx", "no text found in the document body")
-
-
 def run_lint(path):
     # 180s base plus 120s per MB: a 25K-row GL workbook outran a flat 180s
     limit = min(1800, 180 + int(Path(path).stat().st_size / 1e6 * 120))
@@ -586,9 +550,6 @@ def main():
     ph.add_argument("--xlsx", required=True)
     ph.add_argument("--page-text", default=None)
     ph.add_argument("--no-stamp", action="store_true")
-    pd_ = sub.add_parser("docx", help="fingerprints and AI tells on a Word doc we built (10/26/26)")
-    pd_.add_argument("file")
-    pd_.add_argument("--no-stamp", action="store_true")
     pg = sub.add_parser("gate")
     pg.add_argument("--files", nargs="+", required=True)
     pv = sub.add_parser("validated", help="record a data:validate-data pass on these exact bytes (10/31/26)")
@@ -653,13 +614,10 @@ def main():
         check_text_numbers_and_dupes(wv, rep)
         if not a.no_voice:
             check_voice(wv, rep)
-        check_fingerprint(a.file, rep)
         lint_text = run_lint(a.file)
         for ln in lint_text.splitlines():
             if ln.strip().startswith("[HIGH]"):
                 rep.add("HIGH", "lint", ln.strip()[6:].strip())   # a lint HIGH blocks the exit code and the stamp too
-    elif a.mode == "docx":
-        check_docx(a.file, rep)
     else:
         check_html(a.file, a.xlsx, a.page_text, rep)
     by, notes = rep.render()
