@@ -3,6 +3,7 @@
   "owner": { "name": "CI-Public" },
   "description": "Plain-talk writing skills and blind (goldfish) reviewers for school finance work",
   "plugins": [
-    { "name": "ci-public", "source": "./", "description": "Plain-talk skills, goldfish reviewers and the auditor helper kit" }
+    { "name": "ci-public", "source": "./", "description": "Plain-talk skills, goldfish reviewers and the auditor helper kit" },
+    { "name": "ci-colors", "source": "./mods/ci-colors", "description": "Colored replies (a copy of prismantis) with one settings file for colors, width and text styles" }
   ]
 }
