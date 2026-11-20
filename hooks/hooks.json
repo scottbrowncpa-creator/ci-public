@@ -1,5 +1,5 @@
 {
-  "description": "Re-read rule: reminds Claude to re-read files from disk instead of working from chat memory, on every prompt and after a chat is squeezed to a summary.",
+  "description": "Re-read rule (reminds Claude to re-read files from disk) and protect-data check (refuses files with student or bank numbers, warns on SSNs).",
   "hooks": {
     "UserPromptSubmit": [
       {
@@ -7,6 +7,11 @@
           {
             "type": "command",
             "command": "[ \"$CI_PUBLIC_REREAD\" = \"off\" ] || cat \"${CLAUDE_PLUGIN_ROOT}/hooks/reread.txt\""
+          },
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/skills/ci-protect-data/scripts/protect_data_hook.py\" prompt || python \"${CLAUDE_PLUGIN_ROOT}/skills/ci-protect-data/scripts/protect_data_hook.py\" prompt",
+            "timeout": 15
           }
         ]
       }
@@ -18,6 +23,19 @@
           {
             "type": "command",
             "command": "[ \"$CI_PUBLIC_REREAD\" = \"off\" ] || cat \"${CLAUDE_PLUGIN_ROOT}/hooks/reread.txt\""
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Read|Grep|Bash|PowerShell|mcp__PDF_Tools__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/skills/ci-protect-data/scripts/protect_data_hook.py\" pre || python \"${CLAUDE_PLUGIN_ROOT}/skills/ci-protect-data/scripts/protect_data_hook.py\" pre",
+            "timeout": 60,
+            "statusMessage": "protect-data check"
           }
         ]
       }

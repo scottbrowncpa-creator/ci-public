@@ -22,7 +22,7 @@ No sign-in needed. In Claude Code:
 | workbook-auditor-blind | agent | First look at an Excel file with no backstory: footing, ties, formula errors. |
 | close-reviewer-blind | agent | First look at a monthly close package with no backstory. |
 | plan-redteam | agent | Pre-mortem on a big build plan: the three likeliest ways it fails. |
-| ci-protect-data | skill | Masks student IDs and bank numbers in a file before it goes into Claude. |
+| ci-protect-data | skill + hook | Masks student IDs and bank numbers in a file before it goes into Claude. In Claude Code a hook refuses to read such a file until it is masked; SSNs get a warning. `CI_PROTECT_DATA=warn` or `=off` turns it down. |
 | ci-wrapup | skill | Saves an end-of-job summary: what was decided, numbers and sources, what is still open. |
 | re-read rule | hook | Every prompt, and after a long chat is squeezed to a summary, reminds Claude to re-read files from disk instead of trusting chat memory. Text in `hooks/reread.txt`. |
 
