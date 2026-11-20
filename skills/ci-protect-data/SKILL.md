@@ -21,7 +21,16 @@ If the file looks like a payroll register, direct deposit list, benefit bill, ta
 2. Run `python scripts/mask_sensitive.py "<file>"` to write `<file> MASKED.xlsx` next to it. The original is never touched.
 3. Use the MASKED copy. Glance at it first - the tool finds columns by their header names, so a roster with plain "First Name / Last Name" headers and no "Student" in the title will NOT be caught. Rename the header or mask by hand.
 
-On the Claude website (no scripts), tell the person to delete or blank those columns in Excel before uploading.
+On the Claude website (no scripts, no hook), tell the person to delete or blank those columns in Excel before uploading. There this page is the only guard.
+
+## The hook (Claude Code only)
+In Claude Code a hook (`scripts/protect_data_hook.py`) checks file reads by Read, Grep, Bash, PowerShell and the PDF tools, whether or not this skill loaded. A script that builds a file name as it runs can get past it.
+- Needs Python 3.9+ with openpyxl (xlsx), xlrd (xls) and pypdf (PDF): `pip install openpyxl xlrd pypdf`. Without openpyxl or xlrd those files are refused; without pypdf PDFs only warn.
+- Reading an .xlsx, .xlsm, .xls, .csv or .pdf that has student names, IDs, state student IDs, birth dates, or employee bank or routing numbers is refused. Make the MASKED copy (step 2) and read that. `* MASKED.*` files pass.
+- SSNs only: a warning, never a block.
+- A typed or pasted message with routing, account, student ID or SSN numbers gets a reminder not to repeat them.
+- It goes by column headers, same limit as the mask tool. PDFs: the first 40 pages of text, strong patterns only. A scanned PDF cannot be checked and gets a warning instead.
+- If it refuses a file that is fine, the person (not Claude) can set `CI_PROTECT_DATA=warn` to warn instead, or `=off`.
 
 ## If sensitive data shows up anyway
 - Say so plainly, once: "This has SSNs / student names / bank numbers in it."
